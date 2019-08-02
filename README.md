@@ -1,9 +1,55 @@
 # stc89c52  :+1: 我的征途是星辰大海！
 
-## 基础实验例程
+## 基础实验例程 :gift: [大杂烩源码](https://github.com/hongwenjun/stc89c52/tree/master/src)
 
-1. LED闪烁实验 和 跑马灯 [源码](https://raw.githubusercontent.com/hongwenjun/tree/master/1-led/)
+### 1. LED闪烁实验 和 跑马灯 [源码](https://github.com/hongwenjun/stc89c52/tree/master/1-led)
+
 ![](https://raw.githubusercontent.com/hongwenjun/stc89c52/master/img/1-led.webp)
+
+### 2. 使用蜂鸣器演奏音乐 [源码](https://github.com/hongwenjun/stc89c52/tree/master/2-beep_music)
+```c
+// 音乐播放器 :  挥着翅膀的女孩  同一首歌  两只蝴蝶
+void main()
+{
+    InitialSound();
+    while (1) {
+        keypros();
+
+        // K1 按键点歌   两只蝴蝶
+        if (key_id == 1) {
+            Play(Music_Two, 0, 3, 360);
+            Delay1ms(500);
+
+            key_id = 0;
+        }
+
+        // K2 按键点歌   挥着翅膀的女孩
+        if (key_id == 2) {
+            Play(Music_Girl, 0, 3, 360);
+            Delay1ms(500);
+
+            key_id = 0;
+        }
+
+        // K3 按键点歌   同一首歌
+        if (key_id == 3) {
+            Play(Music_Same, 0, 3, 360);
+            Delay1ms(500);
+            key_id = 0;
+        }
+
+        // K4  beep 声音
+        if (key_id == 4) {
+            while (x--) {
+                beep = ~beep;
+                delay(100);
+            }
+            key_id = 0;
+            x = 200 ;
+        }
+    }
+}
+```
 
 ### :100: HC6800-ES V2.0光盘资料(180515)
 ```

@@ -1,45 +1,57 @@
-#include <reg52.h>           //´ËÎÄ¼şÖĞ¶¨ÒåÁËµ¥Æ¬»úµÄÒ»Ğ©ÌØÊâ¹¦ÄÜ¼Ä´æÆ÷
+/*   ä½¿ç”¨ CodeBlocks + SDCC ç¼–è¯‘ 51 å•ç‰‡ç¨‹åº  */
+/*   æ³¨é‡Šæ‰ Keil C51 ç¼–è¯‘å™¨çš„å¤´æ–‡ä»¶å’Œå…³é”®å­—   */
+/// #include "reg52.h"           //æ­¤æ–‡ä»¶ä¸­å®šä¹‰äº†å•ç‰‡æœºçš„ä¸€äº›ç‰¹æ®ŠåŠŸèƒ½å¯„å­˜å™¨
+/// sbit LSA=P2^2;
+/// sbit LSB=P2^3;
+/// sbit LSC=P2^4;
 
-#include "SoundPlay.h"
-#include "music.h"
+/// sbit k1 = P3 ^ 1;
+/// sbit k2 = P3 ^ 0;
+/// sbit k3 = P3 ^ 2;
+/// sbit k4 = P3 ^ 3;
 
-typedef unsigned int u16;     //¶ÔÊı¾İÀàĞÍ½øĞĞÉùÃ÷¶¨Òå
-typedef unsigned char u8;
+// èœ‚é¸£å™¨ç”µè·¯å®šä¹‰
+/// sbit beep = P1 ^ 5;
 
-#define leds P2
+///  ä½¿ç”¨ CodeBlocks + SDCC ç¼–è¯‘ 51 å•ç‰‡ç¨‹åºï¼Œç»‘å®šå•ç‰‡æœº I/O ç«¯å£ï¼Œéœ€è¦æ”¹å†™è¯­æ³•
+///  æ•°ç»„ code å’Œ è®¡æ—¶å™¨ interrupt å…³é”®å­— éœ€è¦æ”¹å†™æˆ  __code  __interrupt
 
-
-
-sbit k1 = P3 ^ 1;
-sbit k2 = P3 ^ 0;
-sbit k3 = P3 ^ 2;
-sbit k4 = P3 ^ 3;
-
-u8 key_id = 0;
-u8 KeyValue = 0xFF;    //ÓÃÀ´´æ·Å¶ÁÈ¡µ½µÄ¼üÖµ
+#define LSA P2_2
+#define LSB P2_3
+#define LSC P2_4
 
 #define GPIO_DIG P0
 #define GPIO_KEY P1
 
+#define leds P2
 
-// ·äÃùÆ÷µçÂ·¶¨Òå
-sbit beep = P1 ^ 5;
+#define k1 P3_1
+#define k2 P3_0
+#define k3 P3_2
+#define k4 P3_3
+
+#define beep P1_5
+
+/// SDCC ç¼–è¯‘å™¨ä¸­çš„ 8051 å¤´æ–‡ä»¶
+#include <mcs51/8051.h>
+
+#include "SoundPlay.h"
+#include "music.h"
+
+typedef unsigned int u16;     //å¯¹æ•°æ®ç±»å‹è¿›è¡Œå£°æ˜å®šä¹‰
+typedef unsigned char u8;
+
+u8 key_id = 0;
+u8 KeyValue = 0xFF;    //ç”¨æ¥å­˜æ”¾è¯»å–åˆ°çš„é”®å€¼
+
 u16 x = 200 ;
 
-// ¿ØÖÆ38ÒëÂëÆ÷µÄY0 µçÂ·¶¨Òåa
-sbit LSA = P2 ^ 2;
-sbit LSB = P2 ^ 3;
-sbit LSC = P2 ^ 4;
-
-
-u8 code smgduan[] = {
+u8 __code smgduan[] = {
     0x3f, 0x06, 0x5b, 0x4f, 0x66,   // 0 1 2 3 4
     0x6d, 0x7d, 0x07, 0x7f, 0x6f,   // 5 6 7 8 9
     0x77, 0x7c, 0x39, 0x5e, 0x79,   // A B C D E
     0x71, 0x00                      // F        NULL
 };
-
-
 
 void Delay1ms(unsigned int count)
 {
@@ -53,17 +65,17 @@ void delay(u16 i)
     while (i--);
 }
 
-// É¨Ãè °´¼ü K1-K4
+// æ‰«æ æŒ‰é”® K1-K4
 void keypros();
 
-// É¨Ãè ¾ØÕó¼üÅÌ S1-S16
+// æ‰«æ çŸ©é˜µé”®ç›˜ S1-S16
 void KeyDown(void);
 
 void test_matrix_key()
 {
     LSA = LSB = LSC = 0;
     while (1) {
-        KeyDown();         //°´¼üÅĞ¶Ïº¯Êı
+        KeyDown();         //æŒ‰é”®åˆ¤æ–­å‡½æ•°
         GPIO_DIG = smgduan[KeyValue]; //
 
         if (KeyValue == 15) {
@@ -82,7 +94,7 @@ void main()
     while (1) {
         keypros();
 
-        // K1 °´¼üµã¸è   Á½Ö»ºûµû
+        // K1 æŒ‰é”®ç‚¹æ­Œ   ä¸¤åªè´è¶
         if (key_id == 1) {
             Play(Music_Two, 0, 3, 360);
             Delay1ms(500);
@@ -90,12 +102,12 @@ void main()
             key_id = 0;
         }
 
-        // K2  Led ÅÜÂíµÆ
+        // K2  Led è·‘é©¬ç¯
         if (key_id == 2) {
             leds = 0xfe; // led:  1111 1110
             delay(50000);
 
-            for (i = 0; i < 7; i++) { //½«led×óÒÆÒ»Î»
+            for (i = 0; i < 7; i++) { //å°†ledå·¦ç§»ä¸€ä½
                 leds = leds << 1;
                 delay(50000);
             }
@@ -103,28 +115,28 @@ void main()
             leds = 0x7F; // led:  1111 1110
             delay(50000);
 
-            for (i = 0; i < 7; i++) { //½«ledÓÒÒÆÒ»Î»
+            for (i = 0; i < 7; i++) { //å°†ledå³ç§»ä¸€ä½
                 leds = leds >> 1;
                 delay(50000);
             }
 
             for (i = 0 ; i != 3 ; i++) {
-                leds = 0x0; // led: È«ÁÁ
+                leds = 0x0; // led: å…¨äº®
                 delay(50000);
-                leds = 0xff; // led: È«Ï¨Ãğ
+                leds = 0xff; // led: å…¨ç†„ç­
                 delay(50000);
             }
             key_id = 0;
         }
 
 
-        // K3 ÊıÂë¹Ü 0-F ¼ÆÊıÏÔÊ¾  ½áÊø beep ³¤Éù
+        // K3 æ•°ç ç®¡ 0-F è®¡æ•°æ˜¾ç¤º  ç»“æŸ beep é•¿å£°
         if (key_id == 3) {
             LSA = 0;
             LSB = 0;
-            LSC = 0; //¿ØÖÆ38ÒëÂëÆ÷µÄY0Êä³öµÍµçÆ½
+            LSC = 0; //æ§åˆ¶38è¯‘ç å™¨çš„Y0è¾“å‡ºä½ç”µå¹³
 
-            // ÊıÂë¹Ü 0-F ¼ÆÊıÏÔÊ¾
+            // æ•°ç ç®¡ 0-F è®¡æ•°æ˜¾ç¤º
             for (i = 0 ; i != 17 ; i++) {
                 P0 = smgduan[i];
                 delay(55000);
@@ -132,11 +144,11 @@ void main()
                 delay(55000);
             }
 
-            // ×´Ì¬¸´Î»
+            // çŠ¶æ€å¤ä½
             LSA = LSB = LSC = 1 ;
             P0 = 0xff;
 
-            // beep ³¤Éù
+            // beep é•¿å£°
             x = 1000 ;
             while (x--) {
                 beep = !beep;
@@ -146,7 +158,7 @@ void main()
             key_id = 0;
         }
 
-        // K4 µ÷ÓÃ É¨Ãè¾ØÕó¼üÅÌ S1-S16 ²âÊÔ³ÌĞò ½áÊø beep ÉùÒô
+        // K4 è°ƒç”¨ æ‰«æçŸ©é˜µé”®ç›˜ S1-S16 æµ‹è¯•ç¨‹åº ç»“æŸ beep å£°éŸ³
         if (key_id == 4) {
 
             test_matrix_key();
@@ -163,10 +175,10 @@ void main()
     }
 }
 
-// É¨Ãè °´¼ü K1-K4
+// æ‰«æ æŒ‰é”® K1-K4
 void keypros()
 {
-    if (k1 == 0) {       // °´¼ü K1 ;  key_id = 1
+    if (k1 == 0) {       // æŒ‰é”® K1 ;  key_id = 1
         delay(1000);
         if (k1 == 0) {
             key_id = 1;
@@ -174,7 +186,7 @@ void keypros()
         while (!k1);
     }
 
-    if (k2 == 0) {      // °´¼ü K2 ;  key_id = 2
+    if (k2 == 0) {      // æŒ‰é”® K2 ;  key_id = 2
         delay(1000);
         if (k2 == 0) {
             key_id = 2;
@@ -199,15 +211,15 @@ void keypros()
     }
 }
 
-// É¨Ãè ¾ØÕó¼üÅÌ S1-S16
+// æ‰«æ çŸ©é˜µé”®ç›˜ S1-S16
 void KeyDown(void)
 {
     char a = 0;
     GPIO_KEY = 0x0f;
-    if (GPIO_KEY != 0x0f) {             //¶ÁÈ¡°´¼üÊÇ·ñ°´ÏÂ
-        delay(1000);                    //ÑÓÊ±10ms½øĞĞÏû¶¶
-        if (GPIO_KEY != 0x0f) {         //ÔÙ´Î¼ì²â¼üÅÌÊÇ·ñ°´ÏÂ
-            //²âÊÔÁĞ
+    if (GPIO_KEY != 0x0f) {             //è¯»å–æŒ‰é”®æ˜¯å¦æŒ‰ä¸‹
+        delay(1000);                    //å»¶æ—¶10msè¿›è¡Œæ¶ˆæŠ–
+        if (GPIO_KEY != 0x0f) {         //å†æ¬¡æ£€æµ‹é”®ç›˜æ˜¯å¦æŒ‰ä¸‹
+            //æµ‹è¯•åˆ—
             GPIO_KEY = 0X0F;
             switch (GPIO_KEY) {
             case (0X07):
@@ -223,7 +235,7 @@ void KeyDown(void)
                 KeyValue = 3;
                 break;
             }
-            //²âÊÔĞĞ
+            //æµ‹è¯•è¡Œ
             GPIO_KEY = 0XF0;
             switch (GPIO_KEY) {
             case (0X70):
@@ -239,7 +251,7 @@ void KeyDown(void)
                 KeyValue = KeyValue + 12;
                 break;
             }
-            while ((a < 50) && (GPIO_KEY != 0xf0)) { //¼ì²â°´¼üËÉÊÖ¼ì²â
+            while ((a < 50) && (GPIO_KEY != 0xf0)) { //æ£€æµ‹æŒ‰é”®æ¾æ‰‹æ£€æµ‹
                 delay(1000);
                 a++;
             }

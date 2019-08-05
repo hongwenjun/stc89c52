@@ -1,6 +1,28 @@
 # stc89c52  :+1: 我的征途是星辰大海！
 
-## 基础实验例程 :gift: [源码 SDCC编译](https://github.com/hongwenjun/stc89c52/tree/master/src) :smile: [源码 Keil C51编译](https://github.com/hongwenjun/stc89c52/tree/master/4keil/)
+## 基础实验例程 :gift: [源码 SDCC编译](https://github.com/hongwenjun/stc89c52/tree/master/src) :smile: [源码 Keil C51编译](https://github.com/hongwenjun/stc89c52/tree/master/src/4keil/)
+
+## CodeBlocks配置使用Keil_C51编译器单片机编译设置方法
+
+- Keil uVision4  C51 安装目录
+
+	C:\Keil
+
+- CodeBlocks编译器设置，选择 Keil C51 Compiler
+```
+编译器目录填	          C:\Keil\C51
+搜索目录-编译器头文件   C:\Keil\C51\INC	
+搜索目录-编译器库文件   C:\Keil\C51\LIB
+```
+### 转换 HEX 工具配置
+```
+名称: Keil_C51编译_生成HEX
+可执行程序:  OH51.EXE
+
+$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).omf
+```
+
+---
 
 ### 1. LED闪烁实验 和 跑马灯 [源码](https://github.com/hongwenjun/stc89c52/tree/master/1-led)
 

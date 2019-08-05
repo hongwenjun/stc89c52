@@ -105,6 +105,33 @@ void KeyDown(void)
 
 ```
 
+### 5. 8*8LED点阵-显示文字实验 [源码](https://github.com/hongwenjun/stc89c52/tree/master/5-matrix_8x8LED)
+```c
+void Hc595SendByte(u8 dat)     // 函数向74HC595发送一个字节的数据
+{
+    u8 a;
+    SRCLK = 0;
+    RCLK = 0;
+    for (a = 0; a < 8; a++) {
+        SER = dat >> 7;  // 获取最高位  0xA3 :  1010 0011  等于 1
+        dat <<= 1;      //  数据移位，移除最高位1补0  0100 0110
+
+        SRCLK = 1;    // 升沿时数据寄存器的数据移位
+        _nop_();
+        _nop_();      // 延时
+        SRCLK = 0;    // 下降沿移位寄存器数据不变
+    }
+
+    RCLK = 1;   // 上升沿时移位寄存器的数据进入数据存储寄存器
+    _nop_();
+    _nop_();    // 延时
+    RCLK = 0;   // 下降沿时存储寄存器数据不变
+}
+
+```
+
+
+
 ### :100: HC6800-ES V2.0光盘资料(180515)
 ```
 V2.0链接: 链接：https://pan.baidu.com/s/1nJyHVv4effJ5y5ffUJFMoQ

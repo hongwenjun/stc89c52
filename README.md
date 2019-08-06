@@ -1,6 +1,8 @@
-# stc89c52  :+1: 我的征途是星辰大海！
+# stc89c52  :+1: 我的征途是星辰大海！  :wink:  http://git.io/CB51
 
 ## 基础实验例程更新 :gift: [Keil C51 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src/4keil/) :smile: [SDCC 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src)
+
+### :100: [51单片机电路原理图_HC6800-ES_V2.0新版.pdf](https://github.com/hongwenjun/stc89c52/tree/master/Document)  :+1: [开发板其他器件芯片中文手册](https://github.com/hongwenjun/img/tree/master/c51)
 
 ---
 
@@ -26,20 +28,20 @@ $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).omf
 
 ---
 
-## CodeBlocks + SDCC开源编译器 C51单片机编译设置
+## CodeBlocks + [SDCC开源编译器](http://sdcc.sourceforge.net) C51单片机编译设置
 :100: SDCC-小型设备C编译器,是一个可重新定位的优化标准C（ANSI C89，ISO C99，ISO C11）编译器套件，针对基于Intel MCS51的微处理器（8031,8032,8051,8052 等）， 
 Maxim（以前的Dallas）DS80C390变体， Freescale（以前的摩托罗拉）基于HC08 （hc08，s08）， 基于Zilog Z80的MCU （z80，z180，gbz80，Rabbit 2000/3000，Rabbit 3000A，TLCS-90），Padauk（pdk14，pdk15）和 STMicroelectronics STM8。
 正在开展支持 Padauk（pdk13），Microchip PIC16和PIC18 目标的工作。它可以重新定位到其他微处理器。
 
-- SDCC-小型设备C编译器，安装目录
+- SDCC-小型设备C编译器 下载网址: http://sdcc.sourceforge.net
 
-	C:\sdcc
+- 推荐安装目录  C:\sdcc
 
 - CodeBlocks编译器设置，选择 SDCC Compiler
 ```
 编译器目录填	        C:\sdcc
-搜索目录-编译器头文件   C:\sdcc\lib
-搜索目录-编译器库文件   C:\Keil\C51\LIB
+搜索目录-编译器头文件   C:\sdcc\include
+搜索目录-编译器库文件   C:\sdcc\lib
 
 # CodeBlocks 新建项目，选 MCS51 Project，默认选择 SDCC Compiler，模版会自动添加 转换C51使用HEX文件 的命令
 cmd /c "packihx <$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).ihx >$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).hex"
@@ -157,7 +159,7 @@ void Hc595SendByte(u8 dat)     // 函数向74HC595发送一个字节的数据
 
 ```
 
-
+---
 
 ### :100: HC6800-ES V2.0光盘资料(180515)
 ```

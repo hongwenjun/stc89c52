@@ -1,16 +1,18 @@
 # stc89c52  :+1: 我的征途是星辰大海！
 
-## 基础实验例程 :gift: [源码 SDCC编译](https://github.com/hongwenjun/stc89c52/tree/master/src) :smile: [源码 Keil C51编译](https://github.com/hongwenjun/stc89c52/tree/master/src/4keil/)
+## 基础实验例程更新 :gift: [Keil C51 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src/4keil/) :smile: [SDCC 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src)
+
+---
 
 ## CodeBlocks配置使用Keil_C51编译器单片机编译设置方法
 
-- Keil uVision4  C51 安装目录
+- Keil uVision4  C51编译器, 安装目录
 
 	C:\Keil
 
 - CodeBlocks编译器设置，选择 Keil C51 Compiler
 ```
-编译器目录填	          C:\Keil\C51
+编译器目录填	        C:\Keil\C51
 搜索目录-编译器头文件   C:\Keil\C51\INC	
 搜索目录-编译器库文件   C:\Keil\C51\LIB
 ```
@@ -20,6 +22,28 @@
 可执行程序:  OH51.EXE
 
 $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).omf
+```
+
+---
+
+## CodeBlocks + SDCC开源编译器 C51单片机编译设置
+:100: SDCC-小型设备C编译器,是一个可重新定位的优化标准C（ANSI C89，ISO C99，ISO C11）编译器套件，针对基于Intel MCS51的微处理器（8031,8032,8051,8052 等）， 
+Maxim（以前的Dallas）DS80C390变体， Freescale（以前的摩托罗拉）基于HC08 （hc08，s08）， 基于Zilog Z80的MCU （z80，z180，gbz80，Rabbit 2000/3000，Rabbit 3000A，TLCS-90），Padauk（pdk14，pdk15）和 STMicroelectronics STM8。
+正在开展支持 Padauk（pdk13），Microchip PIC16和PIC18 目标的工作。它可以重新定位到其他微处理器。
+
+- SDCC-小型设备C编译器，安装目录
+
+	C:\sdcc
+
+- CodeBlocks编译器设置，选择 SDCC Compiler
+```
+编译器目录填	        C:\sdcc
+搜索目录-编译器头文件   C:\sdcc\lib
+搜索目录-编译器库文件   C:\Keil\C51\LIB
+
+# CodeBlocks 新建项目，选 MCS51 Project，默认选择 SDCC Compiler，模版会自动添加 转换C51使用HEX文件 的命令
+cmd /c "packihx <$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).ihx >$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).hex"
+
 ```
 
 ---
@@ -106,6 +130,9 @@ void KeyDown(void)
 ```
 
 ### 5. 8*8LED点阵-显示文字实验 [源码](https://github.com/hongwenjun/stc89c52/tree/master/5-matrix_8x8LED)
+
+![](https://raw.githubusercontent.com/hongwenjun/stc89c52/master/img/8x8led_hong.jpg)
+
 ```c
 void Hc595SendByte(u8 dat)     // 函数向74HC595发送一个字节的数据
 {

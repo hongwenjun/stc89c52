@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="hello" />
+		<Option pch_mode="2" />
+		<Option compiler="keilc51" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin/Release/hello.omf" prefix_auto="1" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output="obj/Release/" />
+				<Option type="5" />
+				<Option compiler="keilc51" />
+				<Compiler>
+					<Add option="OPTIMIZE(11,SIZE)" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Linker>
+			<Add option="RAMSIZE(256)" />
+			<Add option="XDATA(0x0-0x0FFF)" />
+			<Add option="CODE(0x0-0xFFFF)" />
+		</Linker>
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

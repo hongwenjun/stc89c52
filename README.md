@@ -1,6 +1,6 @@
 # stc89c52  :+1: 我的征途是星辰大海！
 
-## 基础实验例程更新 :gift: [Keil C51 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src/4keil/) :smile: [SDCC 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src)
+## 基础实验例程更新 :gift: [Keil C51 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src) :smile: [SDCC 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src/sdcc)
 
 - 开源项目网址  http://git.io/CB51    CodeBlocks 漂亮主题项目： https://git.io/codeblocks
 - CodeBlocks + Keil_C51编译器 C51单片机学习 设置视频演示网址：  https://youtu.be/2YKXRX7Nckk   B站: https://www.bilibili.com/video/av62289305

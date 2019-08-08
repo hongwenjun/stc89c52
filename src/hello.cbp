@@ -22,9 +22,12 @@
 			<Add option="XDATA(0x0-0x0FFF)" />
 			<Add option="CODE(0x0-0xFFFF)" />
 		</Linker>
+		<Unit filename="SoundPlay.h" />
+		<Unit filename="hc6800v2.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="music.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

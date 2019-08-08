@@ -1,108 +1,54 @@
-#include <reg51.h>           //´ËÎÄ¼şÖĞ¶¨ÒåÁËµ¥Æ¬»úµÄÒ»Ğ©ÌØÊâ¹¦ÄÜ¼Ä´æÆ÷
+#include <reg51.h>           //æ­¤æ–‡ä»¶ä¸­å®šä¹‰äº†å•ç‰‡æœºçš„ä¸€äº›ç‰¹æ®ŠåŠŸèƒ½å¯„å­˜å™¨
 #include <intrins.h>
-
 #include <string.h>
 #include <ctype.h>
-
-#include "SoundPlay.h"
-#include "music.h"
-
-typedef unsigned int u16;     //¶ÔÊı¾İÀàĞÍ½øĞĞÉùÃ÷¶¨Òå
-typedef unsigned char u8;
-
-#define leds P2
-
-
-
-sbit k1 = P3 ^ 1;
-sbit k2 = P3 ^ 0;
-sbit k3 = P3 ^ 2;
-sbit k4 = P3 ^ 3;
+#include "hc6800v2.h"
 
 u8 key_id = 0;
-u8 KeyValue = 0xFF;    //ÓÃÀ´´æ·Å¶ÁÈ¡µ½µÄ¼üÖµ
+u8 KeyValue = 0xFF;    //ç”¨æ¥å­˜æ”¾è¯»å–åˆ°çš„é”®å€¼
 
-#define GPIO_DIG P0
-#define GPIO_KEY P1
-
-
-// ·äÃùÆ÷µçÂ·¶¨Òå
-sbit beep = P1 ^ 5;
-u16 x = 200 ;
-
-// ¿ØÖÆ38ÒëÂëÆ÷µÄY0 µçÂ·¶¨Òåa
-sbit LSA = P2 ^ 2;
-sbit LSB = P2 ^ 3;
-sbit LSC = P2 ^ 4;
-
-
-u8 code smgduan[] = {
-    0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f,  // 0 1 2 3 4 5 6 7 8 9
-    0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71, 0x3D, 0x76, 0x8F, 0x0E,  // A b c d E F G H I J
-    0x75, 0x38, 0xB7, 0x54, 0x5C, 0x73, 0x67, 0x31, 0xC9, 0x78,  // K L M n o P q r S t
-    0x3E, 0x1C, 0xFE, 0xE4, 0x6E, 0xDA, 0x40, 0x48, 0x80, 0x00   // U v W X Y Z - = . Null
-};
-
-sbit SRCLK = P3 ^ 6;
-sbit RCLK = P3 ^ 5;   // Õâ¸ö±äÁ¿Ãû reg52.h Í·ÎÄ¼şÓĞÊ¹ÓÃ£¬ËùÒÔÊ¹ÓÃ reg51.h
-sbit SER = P3 ^ 4;
-
-//    ºº×Ö "ºé" ×ÖÄ£
-//    1 0 0 1 0 1 0 0
-//    0 1 1 1 1 1 1 1
-//    1 0 0 1 0 1 0 0
-//    0 1 0 1 0 1 0 0
-//    0 0 1 1 1 1 1 1
-//    0 1 0 1 0 1 0 0
-//    1 0 1 0 0 0 1 0
-//    1 0 1 0 0 0 1 0
-// ´Ó×ó-->ÓÒ£¬Ã¿Ò»ÁĞÈ¡¶ş½øÖÆ»»Ëã16½øÖÆ
-
-u8 ledduan[] = {0xA3, 0x54, 0x4B, 0xFC, 0x48, 0xFC, 0x4B, 0x48};    // ºº×Ö ºé ×ÖÄ£
-u8 ledwei[] = {0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe};     // ÖğÁĞµãÁÁ²»¸Ä
-
-
-
-void Delay1ms(unsigned int count)
+void test_leds()
 {
-    unsigned int i, j;
-    for (i = 0; i < count; i++)
-        for (j = 0; j < 120; j++);
+    u8 i;
+    leds = 0xfe; // led:  1111 1110
+    delay(50000);
+
+    for (i = 0; i < 7; i++) { //å°†ledå·¦ç§»ä¸€ä½
+        leds = leds << 1;
+        delay(50000);
+    }
+
+    leds = 0x7F; // led:  1111 1110
+    delay(50000);
+
+    for (i = 0; i < 7; i++) { //å°†ledå³ç§»ä¸€ä½
+        leds = leds >> 1;
+        delay(50000);
+    }
+
+    for (i = 0 ; i != 3 ; i++) {
+        leds = 0x0; // led: å…¨äº®
+        delay(50000);
+        leds = 0xff; // led: å…¨ç†„ç­
+        delay(50000);
+    }
+
 }
-
-void delay(u16 i)
-{
-    while (i--);
-}
-
-// É¨Ãè °´¼ü K1-K4
-void keypros();
-
-// É¨Ãè ¾ØÕó¼üÅÌ S1-S16
-void KeyDown(void);
-
-void DigDisplay(char* str_7segment, u8 n);
-void str2_7segment(char* s, u8 n);
-void Hc595SendByte(u8 dat);
 
 void test_matrix_key()
 {
     LSA = LSB = LSC = 0;
     while (1) {
-        KeyDown();         //°´¼üÅĞ¶Ïº¯Êı
+        KeyDown();         //æŒ‰é”®åˆ¤æ–­å‡½æ•°
         GPIO_DIG = smgduan[KeyValue]; //
 
-        if (KeyValue == 15) {
-            KeyValue = 0xFF;
-            return ;
-        }
-
+        if (keypros(0) == 4)
+            return ; // K4 é”®é€€å‡º
     }
 }
 
 void hello_digdisplay()
 {
-
     char* ps;
     u8 n = 0;
     u16 X = 400;
@@ -117,9 +63,11 @@ void hello_digdisplay()
     ps = str;
 
     while (1) {
+        if (keypros(0) == 4)
+            return ; // K4 é”®é€€å‡º
 
         while (X--) {
-            DigDisplay(ps, 8);   //ÊıÂë¹ÜÏÔÊ¾º¯Êı
+            DigDisplay(ps, 8);   //æ•°ç ç®¡æ˜¾ç¤ºå‡½æ•°
         }
         if (cnt--)
             ps++;
@@ -129,136 +77,100 @@ void hello_digdisplay()
         }
 
         X = 200;
-
-        // ¾ØÕó¼ü S16 ³¤°´ÍË³ö²âÊÔ
-        KeyDown();
-        if (KeyValue == 15) {
-            KeyValue = 0xFF;
-            return ;
-        }
     }
-
 }
+
 
 void test_8x8_LED()
 {
     u8 i;
     while (1) {
+        if (keypros(0) == 4)
+            return ; // K4 é”®é€€å‡º
+
         P0 = 0x7f;
         for (i = 0; i < 8; i++) {
-            P0 = ledwei[i];       //Î»Ñ¡
-            Hc595SendByte(ledduan[i]);  //·¢ËÍ¶ÎÑ¡Êı¾İ
-            delay(100);        //ÑÓÊ±
-            Hc595SendByte(0x00);  //ÏûÒş
+            P0 = ledwei[i];       //ä½é€‰
+            Hc595SendByte(ledduan[i]);  //å‘é€æ®µé€‰æ•°æ®
+            delay(100);        //å»¶æ—¶
+            Hc595SendByte(0x00);  //æ¶ˆéš
         }
 
-        // ¾ØÕó¼ü S16 ³¤°´ÍË³ö²âÊÔ
-        KeyDown();
-        if (KeyValue == 15) {
-            KeyValue = 0xFF;
-            return ;
-        }
     }
+}
+
+void test_smgduan()
+{
+    u8 i;
+    LSA = 0;
+    LSB = 0;
+    LSC = 0; //æ§åˆ¶38è¯‘ç å™¨çš„Y0è¾“å‡ºä½ç”µå¹³
+
+    // æ•°ç ç®¡ 0-9 A-Z è®¡æ•°æ˜¾ç¤º
+    for (i = 0 ; i != 40 ; i++) {
+        if (keypros(0) == 4)
+            return ; // K4 é”®é€€å‡º
+
+        P0 = smgduan[i];
+        delay(55000);
+        P0 = smgduan[39];
+        delay(55000);
+    }
+
+    // çŠ¶æ€å¤ä½
+    LSA = LSB = LSC = 1 ;
+    P0 = 0xff;
+
 }
 
 void main()
 {
-    u8 i = 0;
     InitialSound();
 
     while (1) {
-        keypros();
+        keypros(0);
 
-        // K1 °´¼üµã¸è   Á½Ö»ºûµû
+        // K1 æŒ‰é”®ç‚¹æ­Œ   ä¸¤åªè´è¶
         if (key_id == 1) {
             Play(Music_Two, 0, 3, 360);
             Delay1ms(500);
-
-            key_id = 0;
         }
 
-        // K2  Led ÅÜÂíµÆ  ÏÔÊ¾ Hello World
+        // K2  Led è·‘é©¬ç¯  æ˜¾ç¤º Hello World
         if (key_id == 2) {
-            leds = 0xfe; // led:  1111 1110
-            delay(50000);
 
-            for (i = 0; i < 7; i++) { //½«led×óÒÆÒ»Î»
-                leds = leds << 1;
-                delay(50000);
-            }
-
-            leds = 0x7F; // led:  1111 1110
-            delay(50000);
-
-            for (i = 0; i < 7; i++) { //½«ledÓÒÒÆÒ»Î»
-                leds = leds >> 1;
-                delay(50000);
-            }
-
-            for (i = 0 ; i != 3 ; i++) {
-                leds = 0x0; // led: È«ÁÁ
-                delay(50000);
-                leds = 0xff; // led: È«Ï¨Ãğ
-                delay(50000);
-            }
-            key_id = 0;
-
+            test_leds();
             hello_digdisplay();
         }
 
-
-        // K3 ÊıÂë¹Ü  0-9 A-Z  ¼ÆÊıÏÔÊ¾  ½áÊø beep ³¤Éù
+        // K3 æ•°ç ç®¡  0-9 A-Z  è®¡æ•°æ˜¾ç¤º  ç»“æŸ beep é•¿å£°
         if (key_id == 3) {
 
-            LSA = 0;
-            LSB = 0;
-            LSC = 0; //¿ØÖÆ38ÒëÂëÆ÷µÄY0Êä³öµÍµçÆ½
+            test_smgduan();
 
-            // ÊıÂë¹Ü 0-9 A-Z ¼ÆÊıÏÔÊ¾
-            for (i = 0 ; i != 40 ; i++) {
-                P0 = smgduan[i];
-                delay(55000);
-                P0 = smgduan[39];
-                delay(55000);
-            }
-
-            // ×´Ì¬¸´Î»
-            LSA = LSB = LSC = 1 ;
-            P0 = 0xff;
-
-            // beep ³¤Éù
-            x = 1000 ;
-            while (x--) {
-                beep = !beep;
-                delay(100);
-            }
-
-            key_id = 0;
-
-            test_8x8_LED();
-        }
-
-        // K4 µ÷ÓÃ É¨Ãè¾ØÕó¼üÅÌ S1-S16 ²âÊÔ³ÌĞò ½áÊø beep ÉùÒô
-        if (key_id == 4) {
+            // beep é•¿å£°
+            beep_ring(1000);
 
             test_matrix_key();
 
-            x = 200 ;
-            while (x--) {
-                beep = !beep;
-                delay(100);
-            }
-            key_id = 0;
+            test_8x8_LED();
+
         }
 
+        // K4 è¿”å›å½“å‰ç¨‹åº
+        if (key_id == 4) {
+            beep_ring(200);
+        }
 
     }
 }
 
-// É¨Ãè °´¼ü K1-K4
-void keypros()
+// æ‰«æ æŒ‰é”® K1-K4
+u8 keypros(u8 n)
 {
-    if (k1 == 0) {       // °´¼ü K1 ;  key_id = 1
+    key_id = n;
+
+    if (k1 == 0) {       // æŒ‰é”® K1 ;  key_id = 1
         delay(1000);
         if (k1 == 0) {
             key_id = 1;
@@ -266,7 +178,7 @@ void keypros()
         while (!k1);
     }
 
-    if (k2 == 0) {      // °´¼ü K2 ;  key_id = 2
+    if (k2 == 0) {      // æŒ‰é”® K2 ;  key_id = 2
         delay(1000);
         if (k2 == 0) {
             key_id = 2;
@@ -289,17 +201,20 @@ void keypros()
         }
         while (!k4);
     }
+
+    return key_id;
 }
 
-// É¨Ãè ¾ØÕó¼üÅÌ S1-S16
-void KeyDown(void)
+// æ‰«æ çŸ©é˜µé”®ç›˜ S1-S16
+u8 KeyDown(void)
 {
     char a = 0;
+
     GPIO_KEY = 0x0f;
-    if (GPIO_KEY != 0x0f) {             //¶ÁÈ¡°´¼üÊÇ·ñ°´ÏÂ
-        delay(1000);                    //ÑÓÊ±10ms½øĞĞÏû¶¶
-        if (GPIO_KEY != 0x0f) {         //ÔÙ´Î¼ì²â¼üÅÌÊÇ·ñ°´ÏÂ
-            //²âÊÔÁĞ
+    if (GPIO_KEY != 0x0f) {             //è¯»å–æŒ‰é”®æ˜¯å¦æŒ‰ä¸‹
+        delay(1000);                    //å»¶æ—¶10msè¿›è¡Œæ¶ˆæŠ–
+        if (GPIO_KEY != 0x0f) {         //å†æ¬¡æ£€æµ‹é”®ç›˜æ˜¯å¦æŒ‰ä¸‹
+            //æµ‹è¯•åˆ—
             GPIO_KEY = 0X0F;
             switch (GPIO_KEY) {
             case (0X07):
@@ -315,7 +230,7 @@ void KeyDown(void)
                 KeyValue = 3;
                 break;
             }
-            //²âÊÔĞĞ
+            //æµ‹è¯•è¡Œ
             GPIO_KEY = 0XF0;
             switch (GPIO_KEY) {
             case (0X70):
@@ -331,63 +246,65 @@ void KeyDown(void)
                 KeyValue = KeyValue + 12;
                 break;
             }
-            while ((a < 50) && (GPIO_KEY != 0xf0)) { //¼ì²â°´¼üËÉÊÖ¼ì²â
+            while ((a < 50) && (GPIO_KEY != 0xf0)) { //æ£€æµ‹æŒ‰é”®æ¾æ‰‹æ£€æµ‹
                 delay(1000);
                 a++;
             }
         }
     }
+
+    return KeyValue;
 }
 
 void DigDisplay(char* str_7segment, u8 n)
 {
     u8 i;
     for (i = 0; i != n; i++) {
-        switch (i) { //Î»Ñ¡£¬Ñ¡ÔñµãÁÁµÄÊıÂë¹Ü£¬
+        switch (i) { //ä½é€‰ï¼Œé€‰æ‹©ç‚¹äº®çš„æ•°ç ç®¡ï¼Œ
         case (7):
             LSA = 0;
             LSB = 0;
             LSC = 0;
-            break;//ÏÔÊ¾µÚ0Î»
+            break;//æ˜¾ç¤ºç¬¬0ä½
         case (6):
             LSA = 1;
             LSB = 0;
             LSC = 0;
-            break;//ÏÔÊ¾µÚ1Î»
+            break;//æ˜¾ç¤ºç¬¬1ä½
         case (5):
             LSA = 0;
             LSB = 1;
             LSC = 0;
-            break;//ÏÔÊ¾µÚ2Î»
+            break;//æ˜¾ç¤ºç¬¬2ä½
         case (4):
             LSA = 1;
             LSB = 1;
             LSC = 0;
-            break;//ÏÔÊ¾µÚ3Î»
+            break;//æ˜¾ç¤ºç¬¬3ä½
         case (3):
             LSA = 0;
             LSB = 0;
             LSC = 1;
-            break;//ÏÔÊ¾µÚ4Î»
+            break;//æ˜¾ç¤ºç¬¬4ä½
         case (2):
             LSA = 1;
             LSB = 0;
             LSC = 1;
-            break;//ÏÔÊ¾µÚ5Î»
+            break;//æ˜¾ç¤ºç¬¬5ä½
         case (1):
             LSA = 0;
             LSB = 1;
             LSC = 1;
-            break;//ÏÔÊ¾µÚ6Î»
+            break;//æ˜¾ç¤ºç¬¬6ä½
         case (0):
             LSA = 1;
             LSB = 1;
             LSC = 1;
-            break;//ÏÔÊ¾µÚ7Î»
+            break;//æ˜¾ç¤ºç¬¬7ä½
         }
-        P0 = smgduan[*str_7segment]; //·¢ËÍ¶ÎÂë
-        delay(100); //¼ä¸ôÒ»¶ÎÊ±¼äÉ¨Ãè
-        P0 = 0x00; //ÏûÒş
+        P0 = smgduan[*str_7segment]; //å‘é€æ®µç 
+        delay(100); //é—´éš”ä¸€æ®µæ—¶é—´æ‰«æ
+        P0 = 0x00; //æ¶ˆéš
         str_7segment++;
     }
 }
@@ -400,7 +317,7 @@ void str2_7segment(char* s, u8 n)
             *s -= '0' ;
 
         if (*s > 0x1F  && *s < 0x40)
-            *s = 39;   // ·ûºÅ²»ÏÔÊ¾  Null
+            *s = 39;   // ç¬¦å·ä¸æ˜¾ç¤º  Null
 
         if (isupper(*s))
             *s = tolower(*s);
@@ -411,12 +328,12 @@ void str2_7segment(char* s, u8 n)
 }
 
 /*******************************************************************************
-* º¯ÊıÃû         : Hc595SendByte(u8 dat)
-* º¯Êı¹¦ÄÜ         : Ïò74HC595·¢ËÍÒ»¸ö×Ö½ÚµÄÊı¾İ
-    74595µÄ¿ØÖÆ¶ËËµÃ÷£º
-    SCK(11½Å)£ºÉÏÉıÑØÊ±Êı¾İ¼Ä´æÆ÷µÄÊı¾İÒÆÎ»¡£QA-->QB-->QC-->...-->QH£»ÏÂ½µÑØÒÆÎ»¼Ä´æÆ÷Êı¾İ²»±ä¡£
-    RCK(12½Å)£ºÉÏÉıÑØÊ±ÒÆÎ»¼Ä´æÆ÷µÄÊı¾İ½øÈëÊı¾İ´æ´¢¼Ä´æÆ÷£¬ÏÂ½µÑØÊ±´æ´¢¼Ä´æÆ÷Êı¾İ²»±ä¡£
-               Í¨³£ÎÒ½«RCKÖÃÎªµÍµãÆ½£¬µ±ÒÆÎ»½áÊøºó£¬ÔÚRCK¶Ë²úÉúÒ»¸öÕıÂö³å£¬¸üĞÂÏÔÊ¾Êı¾İ¡£
+* å‡½æ•°å         : Hc595SendByte(u8 dat)
+* å‡½æ•°åŠŸèƒ½         : å‘74HC595å‘é€ä¸€ä¸ªå­—èŠ‚çš„æ•°æ®
+    74595çš„æ§åˆ¶ç«¯è¯´æ˜ï¼š
+    SCK(11è„š)ï¼šä¸Šå‡æ²¿æ—¶æ•°æ®å¯„å­˜å™¨çš„æ•°æ®ç§»ä½ã€‚QA-->QB-->QC-->...-->QHï¼›ä¸‹é™æ²¿ç§»ä½å¯„å­˜å™¨æ•°æ®ä¸å˜ã€‚
+    RCK(12è„š)ï¼šä¸Šå‡æ²¿æ—¶ç§»ä½å¯„å­˜å™¨çš„æ•°æ®è¿›å…¥æ•°æ®å­˜å‚¨å¯„å­˜å™¨ï¼Œä¸‹é™æ²¿æ—¶å­˜å‚¨å¯„å­˜å™¨æ•°æ®ä¸å˜ã€‚
+               é€šå¸¸æˆ‘å°†RCKç½®ä¸ºä½ç‚¹å¹³ï¼Œå½“ç§»ä½ç»“æŸåï¼Œåœ¨RCKç«¯äº§ç”Ÿä¸€ä¸ªæ­£è„‰å†²ï¼Œæ›´æ–°æ˜¾ç¤ºæ•°æ®ã€‚
 *******************************************************************************/
 void Hc595SendByte(u8 dat)
 {
@@ -424,17 +341,17 @@ void Hc595SendByte(u8 dat)
     SRCLK = 0;
     RCLK = 0;
     for (a = 0; a < 8; a++) {
-        SER = dat >> 7;  // »ñÈ¡×î¸ßÎ»  0xA3 :  1010 0011  µÈÓÚ 1
-        dat <<= 1;      //  Êı¾İÒÆÎ»£¬ÒÆ³ı×î¸ßÎ»1²¹0  0100 0110
+        SER = dat >> 7;  // è·å–æœ€é«˜ä½  0xA3 :  1010 0011  ç­‰äº 1
+        dat <<= 1;      //  æ•°æ®ç§»ä½ï¼Œç§»é™¤æœ€é«˜ä½1è¡¥0  0100 0110
 
-        SRCLK = 1;    // ÉÏÉıÑØÊ±Êı¾İ¼Ä´æÆ÷µÄÊı¾İÒÆÎ»
+        SRCLK = 1;    // ä¸Šå‡æ²¿æ—¶æ•°æ®å¯„å­˜å™¨çš„æ•°æ®ç§»ä½
         _nop_();
-        _nop_();      // ÑÓÊ±
-        SRCLK = 0;    // ÏÂ½µÑØÒÆÎ»¼Ä´æÆ÷Êı¾İ²»±ä
+        _nop_();      // å»¶æ—¶
+        SRCLK = 0;    // ä¸‹é™æ²¿ç§»ä½å¯„å­˜å™¨æ•°æ®ä¸å˜
     }
 
-    RCLK = 1;   // ÉÏÉıÑØÊ±ÒÆÎ»¼Ä´æÆ÷µÄÊı¾İ½øÈëÊı¾İ´æ´¢¼Ä´æÆ÷
+    RCLK = 1;   // ä¸Šå‡æ²¿æ—¶ç§»ä½å¯„å­˜å™¨çš„æ•°æ®è¿›å…¥æ•°æ®å­˜å‚¨å¯„å­˜å™¨
     _nop_();
-    _nop_();    // ÑÓÊ±
-    RCLK = 0;   // ÏÂ½µÑØÊ±´æ´¢¼Ä´æÆ÷Êı¾İ²»±ä
+    _nop_();    // å»¶æ—¶
+    RCLK = 0;   // ä¸‹é™æ²¿æ—¶å­˜å‚¨å¯„å­˜å™¨æ•°æ®ä¸å˜
 }

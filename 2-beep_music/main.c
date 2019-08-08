@@ -1,9 +1,9 @@
-// ÒôÀÖ²¥·ÅÆ÷ :  »Ó×Å³á°òµÄÅ®º¢  Í¬Ò»Ê×¸è  Á½Ö»ºûµû
-#include <reg52.h>           //´ËÎÄ¼şÖĞ¶¨ÒåÁËµ¥Æ¬»úµÄÒ»Ğ©ÌØÊâ¹¦ÄÜ¼Ä´æÆ÷
+// éŸ³ä¹æ’­æ”¾å™¨ :  æŒ¥ç€ç¿…è†€çš„å¥³å­©  åŒä¸€é¦–æ­Œ  ä¸¤åªè´è¶
+#include <reg52.h>           //æ­¤æ–‡ä»¶ä¸­å®šä¹‰äº†å•ç‰‡æœºçš„ä¸€äº›ç‰¹æ®ŠåŠŸèƒ½å¯„å­˜å™¨
 #include "SoundPlay.h"
 #include "music.h"
 
-typedef unsigned int u16;     //¶ÔÊı¾İÀàĞÍ½øĞĞÉùÃ÷¶¨Òå
+typedef unsigned int u16;     //å¯¹æ•°æ®ç±»å‹è¿›è¡Œå£°æ˜å®šä¹‰
 typedef unsigned char u8;
 
 
@@ -29,7 +29,7 @@ void delay(u16 i)
     while (i--);
 }
 
-// É¨Ãè °´¼ü K1-K4
+// æ‰«æ æŒ‰é”® K1-K4
 void keypros();
 
 void main()
@@ -38,7 +38,7 @@ void main()
     while (1) {
         keypros();
 
-        // K1 °´¼üµã¸è   Á½Ö»ºûµû
+        // K1 æŒ‰é”®ç‚¹æ­Œ   ä¸¤åªè´è¶
         if (key_id == 1) {
             Play(Music_Two, 0, 3, 360);
             Delay1ms(500);
@@ -46,7 +46,7 @@ void main()
             key_id = 0;
         }
 
-        // K2 °´¼üµã¸è   »Ó×Å³á°òµÄÅ®º¢
+        // K2 æŒ‰é”®ç‚¹æ­Œ   æŒ¥ç€ç¿…è†€çš„å¥³å­©
         if (key_id == 2) {
             Play(Music_Girl, 0, 3, 360);
             Delay1ms(500);
@@ -54,14 +54,14 @@ void main()
             key_id = 0;
         }
 
-        // K3 °´¼üµã¸è   Í¬Ò»Ê×¸è
+        // K3 æŒ‰é”®ç‚¹æ­Œ   åŒä¸€é¦–æ­Œ
         if (key_id == 3) {
             Play(Music_Same, 0, 3, 360);
             Delay1ms(500);
             key_id = 0;
         }
 
-        // K4  beep ÉùÒô
+        // K4  beep å£°éŸ³
         if (key_id == 4) {
             while (x--) {
                 beep = ~beep;
@@ -73,10 +73,10 @@ void main()
     }
 }
 
-// É¨Ãè °´¼ü K1-K4
+// æ‰«æ æŒ‰é”® K1-K4
 void keypros()
 {
-    if (k1 == 0) {       // °´¼ü K1 ;  key_id = 1
+    if (k1 == 0) {       // æŒ‰é”® K1 ;  key_id = 1
         delay(1000);
         if (k1 == 0) {
             key_id = 1;
@@ -84,7 +84,7 @@ void keypros()
         while (!k1);
     }
 
-    if (k2 == 0) {      // °´¼ü K2 ;  key_id = 2
+    if (k2 == 0) {      // æŒ‰é”® K2 ;  key_id = 2
         delay(1000);
         if (k2 == 0) {
             key_id = 2;

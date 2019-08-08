@@ -11,7 +11,7 @@
 
 ## CodeBlocks配置使用Keil_C51编译器单片机编译设置方法
 
-- Keil uVision4  C51编译器, 安装目录
+- [Keil uVision5  C51](https://www.keil.com/download/product/)编译器, 安装目录
 
 	C:\Keil
 

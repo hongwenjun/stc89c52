@@ -1,75 +1,39 @@
-/*   使用 CodeBlocks + SDCC 编译 51 单片程序  */
-/*   注释掉 Keil C51 编译器的头文件和关键字   */
-/// #include "reg52.h"           //此文件中定义了单片机的一些特殊功能寄存器
-/// sbit LSA=P2^2;
-/// sbit LSB=P2^3;
-/// sbit LSC=P2^4;
-
-/// sbit k1 = P3 ^ 1;
-/// sbit k2 = P3 ^ 0;
-/// sbit k3 = P3 ^ 2;
-/// sbit k4 = P3 ^ 3;
-
-// 蜂鸣器电路定义
-/// sbit beep = P1 ^ 5;
-
-///  使用 CodeBlocks + SDCC 编译 51 单片程序，绑定单片机 I/O 端口，需要改写语法
-///  数组 code 和 计时器 interrupt 关键字 需要改写成  __code  __interrupt
-
-#define LSA P2_2
-#define LSB P2_3
-#define LSC P2_4
-
-#define GPIO_DIG P0
-#define GPIO_KEY P1
-
-#define leds P2
-
-#define k1 P3_1
-#define k2 P3_0
-#define k3 P3_2
-#define k4 P3_3
-
-#define beep P1_5
-
 /// SDCC 编译器中的 8051 头文件
 #include <mcs51/8051.h>
-
-#include "SoundPlay.h"
-#include "music.h"
-
-typedef unsigned int u16;     //对数据类型进行声明定义
-typedef unsigned char u8;
+#include <string.h>
+#include <ctype.h>
+#include "hc6800v2.h"
 
 u8 key_id = 0;
 u8 KeyValue = 0xFF;    //用来存放读取到的键值
 
-u16 x = 200 ;
-
-u8 __code smgduan[] = {
-    0x3f, 0x06, 0x5b, 0x4f, 0x66,   // 0 1 2 3 4
-    0x6d, 0x7d, 0x07, 0x7f, 0x6f,   // 5 6 7 8 9
-    0x77, 0x7c, 0x39, 0x5e, 0x79,   // A B C D E
-    0x71, 0x00                      // F        NULL
-};
-
-void Delay1ms(unsigned int count)
+void test_leds()
 {
-    unsigned int i, j;
-    for (i = 0; i < count; i++)
-        for (j = 0; j < 120; j++);
+    u8 i;
+    leds = 0xfe; // led:  1111 1110
+    delay(50000);
+
+    for (i = 0; i < 7; i++) { //将led左移一位
+        leds = leds << 1;
+        delay(50000);
+    }
+
+    leds = 0x7F; // led:  1111 1110
+    delay(50000);
+
+    for (i = 0; i < 7; i++) { //将led右移一位
+        leds = leds >> 1;
+        delay(50000);
+    }
+
+    for (i = 0 ; i != 3 ; i++) {
+        leds = 0x0; // led: 全亮
+        delay(50000);
+        leds = 0xff; // led: 全熄灭
+        delay(50000);
+    }
+
 }
-
-void delay(u16 i)
-{
-    while (i--);
-}
-
-// 扫描 按键 K1-K4
-void keypros();
-
-// 扫描 矩阵键盘 S1-S16
-void KeyDown(void);
 
 void test_matrix_key()
 {
@@ -78,106 +42,134 @@ void test_matrix_key()
         KeyDown();         //按键判断函数
         GPIO_DIG = smgduan[KeyValue]; //
 
-        if (KeyValue == 15) {
-            KeyValue = 0xFF;
-            return ;
+        if (keypros(0) == 4)
+            return ; // K4 键退出
+    }
+}
+
+void hello_digdisplay()
+{
+    char* ps;
+    u8 n = 0;
+    u16 X = 400;
+    u8 cnt = 0;
+    char str[] = "Hello World! 0123456789AbcdEFGHIJKLMnoPqrStUvWXYZ-=.";
+
+    n = strlen(str);
+
+    str2_7segment(str, n);
+
+    cnt = n - 8;
+    ps = str;
+
+    while (1) {
+        if (keypros(0) == 4)
+            return ; // K4 键退出
+
+        while (X--) {
+            DigDisplay(ps, 8);   //数码管显示函数
+        }
+        if (cnt--)
+            ps++;
+        else {
+            cnt = n - 8;
+            ps = str;
+        }
+
+        X = 200;
+    }
+}
+
+
+void test_8x8_LED()
+{
+    u8 i;
+    while (1) {
+        if (keypros(0) == 4)
+            return ; // K4 键退出
+
+        P0 = 0x7f;
+        for (i = 0; i < 8; i++) {
+            P0 = ledwei[i];       //位选
+            Hc595SendByte(ledduan[i]);  //发送段选数据
+            delay(100);        //延时
+            Hc595SendByte(0x00);  //消隐
         }
 
     }
 }
 
+void test_smgduan()
+{
+    u8 i;
+    LSA = 0;
+    LSB = 0;
+    LSC = 0; //控制38译码器的Y0输出低电平
+
+    // 数码管 0-9 A-Z 计数显示
+    for (i = 0 ; i != 40 ; i++) {
+        if (keypros(0) == 4)
+            return ; // K4 键退出
+
+        P0 = smgduan[i];
+        delay(55000);
+        P0 = smgduan[39];
+        delay(55000);
+    }
+
+    // 状态复位
+    LSA = LSB = LSC = 1 ;
+    P0 = 0xff;
+
+}
+
 void main()
 {
-    u8 i = 0;
     InitialSound();
 
     while (1) {
-        keypros();
+        keypros(0);
 
         // K1 按键点歌   两只蝴蝶
         if (key_id == 1) {
             Play(Music_Two, 0, 3, 360);
             Delay1ms(500);
-
-            key_id = 0;
         }
 
-        // K2  Led 跑马灯
+        // K2  Led 跑马灯  显示 Hello World
         if (key_id == 2) {
-            leds = 0xfe; // led:  1111 1110
-            delay(50000);
 
-            for (i = 0; i < 7; i++) { //将led左移一位
-                leds = leds << 1;
-                delay(50000);
-            }
-
-            leds = 0x7F; // led:  1111 1110
-            delay(50000);
-
-            for (i = 0; i < 7; i++) { //将led右移一位
-                leds = leds >> 1;
-                delay(50000);
-            }
-
-            for (i = 0 ; i != 3 ; i++) {
-                leds = 0x0; // led: 全亮
-                delay(50000);
-                leds = 0xff; // led: 全熄灭
-                delay(50000);
-            }
-            key_id = 0;
+            test_leds();
+            hello_digdisplay();
         }
 
-
-        // K3 数码管 0-F 计数显示  结束 beep 长声
+        // K3 数码管  0-9 A-Z  计数显示  结束 beep 长声
         if (key_id == 3) {
-            LSA = 0;
-            LSB = 0;
-            LSC = 0; //控制38译码器的Y0输出低电平
 
-            // 数码管 0-F 计数显示
-            for (i = 0 ; i != 17 ; i++) {
-                P0 = smgduan[i];
-                delay(55000);
-                P0 = smgduan[16];
-                delay(55000);
-            }
-
-            // 状态复位
-            LSA = LSB = LSC = 1 ;
-            P0 = 0xff;
+            test_smgduan();
 
             // beep 长声
-            x = 1000 ;
-            while (x--) {
-                beep = !beep;
-                delay(100);
-            }
-
-            key_id = 0;
-        }
-
-        // K4 调用 扫描矩阵键盘 S1-S16 测试程序 结束 beep 声音
-        if (key_id == 4) {
+            beep_ring(1000);
 
             test_matrix_key();
 
-            x = 200 ;
-            while (x--) {
-                beep = !beep;
-                delay(100);
-            }
-            key_id = 0;
+            test_8x8_LED();
+
         }
 
+        // K4 返回当前程序
+        if (key_id == 4) {
+            beep_ring(200);
+        }
 
     }
 }
 
 // 扫描 按键 K1-K4
-void keypros()
+u8 keypros(u8 n)
 {
+    key_id = n;
+
     if (k1 == 0) {       // 按键 K1 ;  key_id = 1
         delay(1000);
         if (k1 == 0) {
@@ -209,12 +201,15 @@ void keypros()
         }
         while (!k4);
     }
+
+    return key_id;
 }
 
 // 扫描 矩阵键盘 S1-S16
-void KeyDown(void)
+u8 KeyDown(void)
 {
     char a = 0;
+
     GPIO_KEY = 0x0f;
     if (GPIO_KEY != 0x0f) {             //读取按键是否按下
         delay(1000);                    //延时10ms进行消抖
@@ -257,4 +252,106 @@ void KeyDown(void)
             }
         }
     }
+
+    return KeyValue;
+}
+
+void DigDisplay(char* str_7segment, u8 n)
+{
+    u8 i;
+    for (i = 0; i != n; i++) {
+        switch (i) { //位选，选择点亮的数码管，
+        case (7):
+            LSA = 0;
+            LSB = 0;
+            LSC = 0;
+            break;//显示第0位
+        case (6):
+            LSA = 1;
+            LSB = 0;
+            LSC = 0;
+            break;//显示第1位
+        case (5):
+            LSA = 0;
+            LSB = 1;
+            LSC = 0;
+            break;//显示第2位
+        case (4):
+            LSA = 1;
+            LSB = 1;
+            LSC = 0;
+            break;//显示第3位
+        case (3):
+            LSA = 0;
+            LSB = 0;
+            LSC = 1;
+            break;//显示第4位
+        case (2):
+            LSA = 1;
+            LSB = 0;
+            LSC = 1;
+            break;//显示第5位
+        case (1):
+            LSA = 0;
+            LSB = 1;
+            LSC = 1;
+            break;//显示第6位
+        case (0):
+            LSA = 1;
+            LSB = 1;
+            LSC = 1;
+            break;//显示第7位
+        }
+        P0 = smgduan[*str_7segment]; //发送段码
+        delay(100); //间隔一段时间扫描
+        P0 = 0x00; //消隐
+        str_7segment++;
+    }
+}
+
+void str2_7segment(char* s, u8 n)
+{
+    u8 i;
+    for (i = 0 ; i != n; ++i) {
+        if (isdigit(*s))
+            *s -= '0' ;
+
+        if (*s > 0x1F  && *s < 0x40)
+            *s = 39;   // 符号不显示  Null
+
+        if (isupper(*s))
+            *s = tolower(*s);
+        if (islower(*s))
+            *s = *s - 'a' + 10 ;
+        s++;
+    }
+}
+
+/*******************************************************************************
+* 函数名         : Hc595SendByte(u8 dat)
+* 函数功能         : 向74HC595发送一个字节的数据
+    74595的控制端说明：
+    SCK(11脚)：上升沿时数据寄存器的数据移位。QA-->QB-->QC-->...-->QH；下降沿移位寄存器数据不变。
+    RCK(12脚)：上升沿时移位寄存器的数据进入数据存储寄存器，下降沿时存储寄存器数据不变。
+               通常我将RCK置为低点平，当移位结束后，在RCK端产生一个正脉冲，更新显示数据。
+*******************************************************************************/
+void Hc595SendByte(u8 dat)
+{
+    u8 a;
+    SRCLK = 0;
+    RCLK = 0;
+    for (a = 0; a < 8; a++) {
+        SER = dat >> 7;  // 获取最高位  0xA3 :  1010 0011  等于 1
+        dat <<= 1;      //  数据移位，移除最高位1补0  0100 0110
+
+        SRCLK = 1;    // 上升沿时数据寄存器的数据移位
+        _nop_();
+        _nop_();      // 延时
+        SRCLK = 0;    // 下降沿移位寄存器数据不变
+    }
+
+    RCLK = 1;   // 上升沿时移位寄存器的数据进入数据存储寄存器
+    _nop_();
+    _nop_();    // 延时
+    RCLK = 0;   // 下降沿时存储寄存器数据不变
 }

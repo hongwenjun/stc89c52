@@ -80,7 +80,7 @@ void main()
 }
 ```
 
-### 3. 动态数码管显示 [源码](https://github.com/hongwenjun/stc89c52/tree/master/3-lcd_display)  :gift: [7段26字母 显示 Helloworld](https://github.com/hongwenjun/stc89c52/tree/master/src/str_7segment/)
+### 3. 动态数码管显示 [源码](https://github.com/hongwenjun/stc89c52/tree/master/3-led_segment_displays)  :gift: [7段26字母 显示 Helloworld](https://github.com/hongwenjun/stc89c52/tree/master/src/str_7segment/)
 
 ![](https://raw.githubusercontent.com/hongwenjun/stc89c52/master/img/hello_world.webp)
 

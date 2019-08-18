@@ -51,7 +51,7 @@ void Lcd_Init()
 {
     LcdWrCmd(0x38); // 写指令38H: 显示模式设置
     LcdWrCmd(0x0C); // 写指令0CH: 开显示，不显示光标
-    LcdWrCmd(0x06); // 写指令06H: 显示清屏
+    LcdWrCmd(0x06); // 写指令06H: 光标移动设置
     LcdWrCmd(0x01); // 写指令01H: 显示清屏
                     // 写指令08H 显示关闭
 }
@@ -78,13 +78,19 @@ void LcdWrCmd(uchar cmd)
 
 void LcdBusy()
 {
+    uint cnt = 0;
     LcdDB = 0xFF;   // I/O 口重置
     LcdRS = 0;
     LcdRW = 1;      // 高电平时进行读操作
     LcdEN = 1;
-    while (LcdDB & 0x80);   // 检测忙信号，等待
+    while (LcdDB & 0x80) { // 检测忙信号，等待
+        if (cnt >= 1000)
+            return ;
+        cnt++;
+    }
     LcdEN = 0;
 }
+
 
 // 显示坐标: x为横坐标;  y为竖坐标 y=0; 第一行 y=1; 第二行
 void Lcd_Show(uchar x, uchar y)

@@ -127,7 +127,7 @@ void test_smgduan()
 
 void test_lcd1602a(void)
 {
-    uchar code tabel1[] = "I love MCU";
+    uchar code tabel1[] = "Hello World!";
     uchar code tabel2[] = "I love ZheJiang";
 
     uchar* str1 = tabel1;
@@ -153,17 +153,18 @@ void main()
 {
     InitialSound();
 
-    test_lcd1602a();
-
     while (1) {
         keypros(0);
 
-        // K1 按键点歌   两只蝴蝶
+        // K1 按键点歌   LCD1602 测试 和  两只蝴蝶
         if (key_id == 1) {
+            test_lcd1602a();
+
             Play(Music_Two, 0, 3, 360);
             Delay1ms(500);
         }
 
+        // LCD1602 安装在版子上，会和数码管显示冲突
         // K2  Led 跑马灯  显示 Hello World
         if (key_id == 2) {
 

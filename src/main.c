@@ -3,6 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 #include "hc6800v2.h"
+#include "lcd1602a.h"
+
 
 u8 key_id = 0;
 u8 KeyValue = 0xFF;    //用来存放读取到的键值
@@ -123,9 +125,35 @@ void test_smgduan()
 
 }
 
+void test_lcd1602a(void)
+{
+    uchar code tabel1[] = "I love MCU";
+    uchar code tabel2[] = "I love ZheJiang";
+
+    uchar* str1 = tabel1;
+    uchar* str2 = tabel2;
+
+    Lcd_Init();       // 第一步：初始化  (单片机先跟1602打个招呼)
+
+    Lcd_Show(2, 0);   // 第二步：确定显示位置  (单片机告诉1602在哪里显示)
+
+    while (*str1 != '\0') {
+        LcdWrDat(*str1++);   // 第三部：确定显示内容  (单片机告诉1602显示什么内容)
+    }
+
+    // 显示坐标 0 行首，1 第2行
+    Lcd_Show(0, 1);
+    while (*str2 != '\0') {
+        LcdWrDat(*str2++);
+    }
+
+}
+
 void main()
 {
     InitialSound();
+
+    test_lcd1602a();
 
     while (1) {
         keypros(0);

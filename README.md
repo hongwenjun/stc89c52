@@ -1,6 +1,6 @@
 # stc89c52  :+1: 我的征途是星辰大海！
 
-## 基础实验例程更新 :gift: [Keil C51 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src) :smile: [SDCC 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src/sdcc)
+## 基础实验例程更新 :gift: [Keil C51 编译源码](https://github.com/hongwenjun/stc89c52/tree/master/src) :smile: [SDCC lib源码](https://github.com/hongwenjun/stc89c52/tree/master/sdcc/lib_src)
 
 ### CodeBlocks + Keil_C51编译器 C51单片机学习 设置视频演示
 - 网址：  https://youtu.be/2YKXRX7Nckk   :smile:  B站: https://www.bilibili.com/video/av62289305
@@ -113,38 +113,38 @@ u8 code smgduan[] = {
 ```c
 void KeyDown(void)
 {
-	char a=0;
-	GPIO_KEY=0x0f;
-	if(GPIO_KEY!=0x0f)//读取按键是否按下
-	{
-		delay(1000);//延时10ms进行消抖
-		if(GPIO_KEY!=0x0f)//再次检测键盘是否按下
-		{
-			//测试列
-			GPIO_KEY=0X0F;
-			switch(GPIO_KEY)
-			{
-				case(0X07):	KeyValue=0;break;
-				case(0X0b):	KeyValue=1;break;
-				case(0X0d): KeyValue=2;break;
-				case(0X0e):	KeyValue=3;break;
-			}
-			//测试行
-			GPIO_KEY=0XF0;
-			switch(GPIO_KEY)
-			{
-				case(0X70):	KeyValue=KeyValue;break;
-				case(0Xb0):	KeyValue=KeyValue+4;break;
-				case(0Xd0): KeyValue=KeyValue+8;break;
-				case(0Xe0):	KeyValue=KeyValue+12;break;
-			}
-			while((a<50)&&(GPIO_KEY!=0xf0))	 //检测按键松手检测
-			{
-				delay(1000);
-				a++;
-			}
-		}
-	}
+  char a=0;
+  GPIO_KEY=0x0f;
+  if(GPIO_KEY!=0x0f)//读取按键是否按下
+  {
+    delay(1000);//延时10ms进行消抖
+    if(GPIO_KEY!=0x0f)//再次检测键盘是否按下
+    {
+      //测试列
+      GPIO_KEY=0X0F;
+      switch(GPIO_KEY)
+      {
+          case(0X07):	KeyValue=0;break;
+          case(0X0b):	KeyValue=1;break;
+          case(0X0d): KeyValue=2;break;
+          case(0X0e):	KeyValue=3;break;
+      }
+      //测试行
+      GPIO_KEY=0XF0;
+      switch(GPIO_KEY)
+      {
+          case(0X70):	KeyValue=KeyValue;break;
+          case(0Xb0):	KeyValue=KeyValue+4;break;
+          case(0Xd0): KeyValue=KeyValue+8;break;
+          case(0Xe0):	KeyValue=KeyValue+12;break;
+      }
+      while((a<50)&&(GPIO_KEY!=0xf0))	 //检测按键松手检测
+      {
+          delay(1000);
+          a++;
+      }
+    }
+  }
 }
 
 ```
@@ -179,7 +179,10 @@ void Hc595SendByte(u8 dat)     // 函数向74HC595发送一个字节的数据
 
 
 ### 8. 初识LCD1602液晶模块 [源码](https://github.com/hongwenjun/stc89c52/tree/master/8-lcd1602_display)
-```
+
+![](https://raw.githubusercontent.com/hongwenjun/stc89c52/master/img/lcd1602.jpg)
+
+```c
 #define LcdDB  P0       // D0-D7 为8位双向数据线，传输数据或命令
 sbit  LcdRS = P2 ^ 6;   // RS 为寄存器选择，高电平时选择数据寄存器，低电平时选择指令寄存
 sbit  LcdRW = P2 ^ 5;   // R/W 为读写信号线, 高电平时进行读操作，低电平时进行写操作
@@ -195,7 +198,7 @@ void Lcd_Init()
 {
     LcdWrCmd(0x38); // 写指令38H: 显示模式设置
     LcdWrCmd(0x0C); // 写指令0CH: 开显示，不显示光标
-    LcdWrCmd(0x06); // 写指令06H: 显示清屏
+    LcdWrCmd(0x06); // 写指令06H: 光标移动设置
     LcdWrCmd(0x01); // 写指令01H: 显示清屏
                     // 写指令08H 显示关闭
 }

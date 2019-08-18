@@ -1,3 +1,29 @@
+## :smile: [SDCC lib源码](https://github.com/hongwenjun/stc89c52/tree/master/sdcc/lib_src)
+
+---
+
+## CodeBlocks + [SDCC开源编译器](http://sdcc.sourceforge.net) C51单片机编译设置
+:100: SDCC-小型设备C编译器,是一个可重新定位的优化标准C（ANSI C89，ISO C99，ISO C11）编译器套件，针对基于Intel MCS51的微处理器（8031,8032,8051,8052 等），
+Maxim（以前的Dallas）DS80C390变体， Freescale（以前的摩托罗拉）基于HC08 （hc08，s08）， 基于Zilog Z80的MCU （z80，z180，gbz80，Rabbit 2000/3000，Rabbit 3000A，TLCS-90），Padauk（pdk14，pdk15）和 STMicroelectronics STM8。
+正在开展支持 Padauk（pdk13），Microchip PIC16和PIC18 目标的工作。它可以重新定位到其他微处理器。
+
+- SDCC-小型设备C编译器 下载网址: http://sdcc.sourceforge.net
+
+- 推荐安装目录  C:\sdcc
+
+- CodeBlocks编译器设置，选择 SDCC Compiler
+```
+编译器目录填	        C:\sdcc
+搜索目录-编译器头文件   C:\sdcc\include
+搜索目录-编译器库文件   C:\sdcc\lib
+
+# CodeBlocks 新建项目，选 MCS51 Project，默认选择 SDCC Compiler，模版会自动添加 转换C51使用HEX文件 的命令
+cmd /c "packihx <$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).ihx >$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).hex"
+
+```
+
+---
+
 ###  CodeBlocks 构建: 在 MCS51 中 (编译器: SDCC Compiler)
 ```
 sdcc.exe -mmcs51 --model-medium --opt-code-size -IC:\sdcc\include  -IR:\t\src\sdcc -c main.c -o obj\Release\main.rel

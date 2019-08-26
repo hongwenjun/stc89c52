@@ -177,6 +177,9 @@ void Hc595SendByte(u8 dat)     // 函数向74HC595发送一个字节的数据
 
 ```
 
+### 6. 定时器和中断 [源码](https://github.com/hongwenjun/stc89c52/tree/master/6-timer)
+
+
 
 ### 8. 初识LCD1602液晶模块 [源码](https://github.com/hongwenjun/stc89c52/tree/master/8-lcd1602_display)
 

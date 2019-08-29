@@ -9,32 +9,32 @@
 u8 key_id = 0;
 u8 KeyValue = 0xFF;    //用来存放读取到的键值
 
+void test_ds1302_main();
+void test_ds1302_calendar();
+
 void test_leds()
 {
     u8 i;
-    leds = 0xfe; // led:  1111 1110
-    delay(50000);
+    u8 led = 0x1;
 
-    for (i = 0; i < 7; i++) { //将led左移一位
-        leds = leds << 1;
-        delay(50000);
+    // D1 - D8  LED流水灯
+    for (i = 0; i < 9; i++) {
+        P2 = ~led;
+        delay(55000);
+        led = led << 1;
     }
+    led = 0x1;
 
-    leds = 0x7F; // led:  1111 1110
-    delay(50000);
-
-    for (i = 0; i < 7; i++) { //将led右移一位
-        leds = leds >> 1;
-        delay(50000);
+    // D9 - D16  LED流水灯
+    P0 = 0x7f; // 8x8 LED
+    for (i = 0; i < 9; i++) {
+        Hc595SendByte(~led);
+        delay(55000);        //延时
+        led = led << 1;
     }
+    led = 0x1;
 
-    for (i = 0 ; i != 3 ; i++) {
-        leds = 0x0; // led: 全亮
-        delay(50000);
-        leds = 0xff; // led: 全熄灭
-        delay(50000);
-    }
-
+    P2 = 0xFF;
 }
 
 void test_matrix_key()
@@ -55,7 +55,7 @@ void hello_digdisplay()
     u8 n = 0;
     u16 X = 400;
     u8 cnt = 0;
-    char str[] = "Hello World! 0123456789AbcdEFGHIJKLMnoPqrStUvWXYZ-=.";
+    char str[] = "Hello World I love ZheJiang";
 
     n = strlen(str);
 
@@ -168,8 +168,12 @@ void main()
         // K2  Led 跑马灯  显示 Hello World
         if (key_id == 2) {
 
-            test_leds();
             hello_digdisplay();
+
+            test_ds1302_main();
+
+            test_leds();  // 跑马灯 P2 I/O 同 LCD1602  EN 端冲突，交换次序
+            // 跑马灯 演示后，LCD1602 和 数码管会不正常
         }
 
         // K3 数码管  0-9 A-Z  计数显示  结束 beep 长声
@@ -184,6 +188,7 @@ void main()
 
             test_8x8_LED();
 
+            test_ds1302_calendar();
         }
 
         // K4 返回当前程序

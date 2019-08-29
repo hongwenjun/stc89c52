@@ -23,11 +23,22 @@
 			<Add option="CODE(0x0-0xFFFF)" />
 		</Linker>
 		<Unit filename="SoundPlay.h" />
+		<Unit filename="ds1302.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ds1302.h" />
 		<Unit filename="hc6800v2.h" />
+		<Unit filename="lcd1602a.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lcd1602a.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="music.h" />
+		<Unit filename="test_ds1302.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

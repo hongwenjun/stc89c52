@@ -178,8 +178,52 @@ void Hc595SendByte(u8 dat)     // 函数向74HC595发送一个字节的数据
 ```
 
 ### 6. 定时器和中断 [源码](https://github.com/hongwenjun/stc89c52/tree/master/6-timer)
+```c
+// 中断法使用定时器
+void Timer0Init(void)       //2毫秒@12.000MHz
+{
+  EA = 1 ; // 使能总中断
+  TMOD &= 0xFC;       //设置定时器模式
+  TMOD |= 0x01;
+  TH0 = (655536 - 2000) / 256;  //定时 2ms
+  TL0 = (655536 - 2000) % 256;
+  ET0 = 1;       //  打开定时器0
+  TR0 = 1;        //定时器0开始计时
+}
 
+void inter_timer0() interrupt 1
+{
+  static unsigned int cnt;
+  TH0 = (655536 - 2000) / 256;
+  TL0 = (655536 - 2000) % 256;
+  cnt++;
+  if (cnt >= 1000) {   // 2ms × 1000  = 2秒触发一次
+      cnt = 0;
+      P2 = ~P2;
 
+  }
+}
+```
+
+### 7. 按键控制外部中断 [源码](https://github.com/hongwenjun/stc89c52/tree/master/7-external_interrupt)
+```c
+#include <reg51.h>
+// K3 独立按键 触发外部中断 INT0
+//External interrupt0 service routine //外部中断0服务程序
+void exint0() interrupt 0           //(location at 0003H)
+{
+    P2++;      // LED组灯在 P2 I/O 端口
+}
+
+void main()
+{
+    IT0 = 1;    //set INT0 int type  //设置INT0 int类型(1:下降 0:低级别)
+    EX0 = 1;    //enable INT0 interrupt  //启用INT0中断
+    EA = 1;     //open global interrupt switch  //打开全局中断开关
+
+    while (1);
+}
+```
 
 ### 8. 初识LCD1602液晶模块 [源码](https://github.com/hongwenjun/stc89c52/tree/master/8-lcd1602_display)
 

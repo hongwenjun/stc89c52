@@ -2,7 +2,7 @@
 
 #include <reg52.h>
 
-void Timer0Init(void)       //20毫秒@12.000MHz
+void Timer0Init(void)       //2毫秒@12.000MHz
 {
     EA = 1 ; // 使能总中断
     TMOD &= 0xFC;       //设置定时器模式

@@ -12,6 +12,13 @@
 
 - 夏老师十天玩转单片机视屏教程-零基础教学  https://www.bilibili.com/video/av37406640
 
+## 2023.03.26 我去年买了个表，一直走不准，现在终于可以设置时间了
+
+![](https://raw.githubusercontent.com/hongwenjun/stc89c52/master/img/digital_watch.webp)
+
+### 相关链接：[74H芯片到底是什么](https://youtu.be/uETwQYJhoXs)  [1602A LCD的工作原理](https://youtu.be/GEKVSmihi3Y)  [数码管如何工作](https://youtu.be/UfhU9_y-CGM) 
+
+### 电子表源码 [999-KeilProject](https://github.com/hongwenjun/stc89c52/tree/master/999-KeilProject)
 
 ### :100: [51单片机电路原理图_HC6800-ES_V2.0新版.pdf](https://github.com/hongwenjun/stc89c52/tree/master/Document)  :+1: [开发板其他器件芯片中文手册](https://github.com/hongwenjun/img/tree/master/c51)
 
